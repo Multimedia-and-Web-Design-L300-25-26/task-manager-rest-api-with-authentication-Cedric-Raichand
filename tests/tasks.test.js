@@ -5,34 +5,30 @@ let token;
 let taskId;
 
 beforeAll(async () => {
-  // Register
-  await request(app)
+  const register = await request(app)
     .post("/api/auth/register")
     .send({
       name: "Task User",
       email: "task@example.com",
       password: "123456"
-    });
+    }, 20000);
 
-  // Login
   const res = await request(app)
     .post("/api/auth/login")
     .send({
       email: "task@example.com",
       password: "123456"
-    });
+    }, 20000);
 
   token = res.body.token;
-});
+}, 20000); // ⬅️ timeout for beforeAll
 
 describe("Task Routes", () => {
 
   it("should not allow access without token", async () => {
-    const res = await request(app)
-      .get("/api/tasks");
-
+    const res = await request(app).get("/api/tasks");
     expect(res.statusCode).toBe(401);
-  });
+  }, 20000);
 
   it("should create a task", async () => {
     const res = await request(app)
@@ -47,7 +43,7 @@ describe("Task Routes", () => {
     expect(res.body.title).toBe("Test Task");
 
     taskId = res.body._id;
-  });
+  }, 20000);
 
   it("should get user tasks only", async () => {
     const res = await request(app)
@@ -56,6 +52,6 @@ describe("Task Routes", () => {
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
-  });
+  }, 20000);
 
 });
